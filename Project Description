@@ -1,0 +1,28 @@
+
+Clusters of Persons
+
+The archive TM.zip on GitHub (careful: the archive size is 44MB!) contains 36 JSON files collected using RecordedFuture APIs. The collection has information about all recorded instances of Turkmenistani media referencing any of the Central Asian states (Kazakhstan, Kyrgyzstan, Uzbekistan, Tajikistan, Afghanistan, and Turkmenistan itself) in 2008-2013. The code book for the JSON files is on the page 17 of the class lecture notes. You shall identify the most frequently mentioned persons and group them based on the temporal referencing patterns. 
+
+Before you start working on the project, download the archive and unzip it into the subdirectory data of the directory that contains the Python script(s).
+
+Your program shall:
+
+    Read all JSON files.
+    Create a list of instances; note that the same instance may be listed in more than one file; all instances on your list must be unique by instance ID.
+    Create a list of all persons; the persons are entities of type "Person"; note that the same person may be listed in more than one file; all persons on your list must be unique by entity ID.
+    Count the number of instances that mention each person, by year. The list of entities mentioned in an instance X is stored in X.attributes.entities.
+    As a result, you will have a table of N rows and M columns, where N is the number of persons and M is the number of years.
+    Normalize each column by dividing each number by the sum of all numbers in the column to calculate the frequencies of mentioning.
+    Arrange the rows in the decreasing order by the sum of all frequencies in a row. The top 250 rows are the top 250 most frequently mentioned persons. Save this list in the file top250.txt, one name per line. You will need only these rows for the rest of the analysis.
+    Each row in the table is a vector of six numbers. The length of the vector is the square root of the sum of the squares of the numbers. Normalize each vector by dividing each number by the vector length. Alternatively, use function sklearn.preprosessing.normalize() from the module sklearn.preprocessing. 
+    Do k-means clustering of the 250 vectors, using the class sklearn.cluster.KMeans: create an instance of the class and use method .cluster(). The method partitions the vectors into a number of clusters, based on their similarity. In other words, if the frequencies of mentioning of two persons were correlated (were changing together over the six years), the persons will be likely assigned to the same cluster.
+    The default number of clusters is 8. However, a rule of thumb suggests that the number of clusters shall be M~sqrt(N), where N is the number of vectors. Choosing the right number of clusters is a matter of trial-and-error: if you end up having some very small clusters, try gradually decreasing M.
+    Save the list of persons in clusters in the CSV file top250clustered.csv. The file shall have three columns: the cluster ID (1 through M), the name of the person, and the total frequency of mentioning (used for sorting in item 7). The rows shall be ordered by the cluster ID and then by the persons' names.
+
+In addition to the result files, you shall also submit a report of at least 1 page that addresses the following questions:
+
+    Is there a clear visibile change in the frequency of mentioning in the result table? In other words, does there seem to be a group of persons (within the 250 top persons) who are mentioned much more frequently than the other persons in the table? Are there more than two distinct groups?
+    How many persons on the list do you recognize? Do they belong to one clusters or are spread between different clusters?
+    Can you think of a name for each cluster of persons? (Say, "local politicians" or "American politicians")
+
+

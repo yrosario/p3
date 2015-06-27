@@ -8,10 +8,8 @@ Created on Sun Jun 21 23:00:08 2015
 from os import listdir
 import sys
 import json
-#import pandas as pd
 import re
-import pdb
- 
+import pandas as pd 
 
 def main():
     dataFolder = "data"
@@ -30,14 +28,14 @@ def main():
     #person may be listed in more than one file; all persons on your list must be unique by 
     #entity ID.
     #print(fileList[4:5])
-    personsLst = getPersons(fileList[4:6])
-    print(type(personsLst[:6]))
+    personsLst = getPersons(fileList[1:6])
     
-    personCount = getCount(instancesLst, personsLst)
+
     #Count the number of persons by year. Result should be a table of N rows and M columns.
     #N is the number of persons and M is the years
     #Maybe it should return an array with?
     #personCount = getCount(instancesLst, personsLst)
+    personCount = getCount(instancesLst, personsLst)
     
     #Normalize each column by dividing each number by the sum of all numbers in the column 
     #to calculate the frequencies of mentioning.
@@ -93,10 +91,16 @@ def getInstances(fileList):
         try:
            path = "data/" + file
            with open(path) as infile:
+               
                data = json.load(infile)
-               content = data["instances"]
-               listIt.append(content)
-           
+               ins = data["instances"]
+               if ins:
+                   ins = ins.pop()["id"]
+                   if  ins not in instanceIds:
+                       instanceIds.append(ins)
+                       content = data["instances"]
+                       listIt.append(content)
+       
         except IOError as io:
             print("Unable open file " + io)
             infile.close()
@@ -145,42 +149,44 @@ def getCount(lstOfInstances, lstOfPersons):
         if(len(ins)):
             content = ins.pop()
             date = content["document"]["published"][:4]
-            k = ins.pop()
-            for key in k.keys():
-               #print(key)
-               for person in lstOfPersons:
-                   #perFreq["year"] = date
-                   #perFreq["number of Persons"] = person
-                   if type(k[key]) is dict:
-                       for key2 in k[key].keys():
-                          #print(type(k[key][key2]))
-                          if type(k[key][key2]) is dict:
-                              for key3 in k[key][key2]:
-                                  #print(type(k[key][key2][key3]))
-                                  if type(k[key][key2][key3]) is str:
-                                      try:
-                                          if re.match(person, k[key][key2][key3], re.I):
-                                              perFreq["year"] = date
-                                              perFreq["number of Persons"] = 1
-                                      except:
-                                          continue
-                          elif type(k[key][key2]) is str:
-                              try:
-                                  if re.match(person, k[key][key2], re.I):
-                                      perFreq["year"] = date
-                                      perFreq["number of Persons"] = perFreq["number of Persons"] + 1
-                              except:
-                                     continue
-                   elif type(k[key]) is str and type(person) is str and len(k[key]):
-                       
-                       #pdb.set_trace()
-                       #print(k[key])
-                       try:
-                           if re.match(person, k[key], re.I):
-                               perFreq["year"] = date
-                               perFreq["number of Persons"] = 1
-                       except:
-                           continue
+            print(date)
+            if ins:
+                k = ins.pop()
+                for key in k.keys():
+                   #print(key)
+                   for person in lstOfPersons:
+                       #perFreq["year"] = date
+                       #perFreq["number of Persons"] = person
+                       if type(k[key]) is dict:
+                           for key2 in k[key].keys():
+                              #print(type(k[key][key2]))
+                              if type(k[key][key2]) is dict:
+                                  for key3 in k[key][key2]:
+                                      #print(type(k[key][key2][key3]))
+                                      if type(k[key][key2][key3]) is str:
+                                          try:
+                                              if re.match(person, k[key][key2][key3], re.I):
+                                                  perFreq["year"] = date
+                                                  perFreq["number of Persons"] = 1
+                                          except:
+                                              continue
+                              elif type(k[key][key2]) is str:
+                                  try:
+                                      if re.match(person, k[key][key2], re.I):
+                                          perFreq["year"] = date
+                                          perFreq["number of Persons"] = perFreq["number of Persons"] + 1
+                                  except:
+                                         continue
+                       elif type(k[key]) is str and type(person) is str and len(k[key]):
+                           
+                           #pdb.set_trace()
+                           #print(k[key])
+                           try:
+                               if re.match(person, k[key], re.I):
+                                   perFreq["year"] = date
+                                   perFreq["number of Persons"] = 1
+                           except:
+                               continue
                    
                    
     print(perFreq)     
